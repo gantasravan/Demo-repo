@@ -1,0 +1,15 @@
+package rbt.cagamas.mortgagecalculation;
+
+import java.lang.Number;
+
+rule "ValidateHL"
+	dialect "mvel"
+	ruleflow-group "validation-rule"
+	when
+		Mortgage( productType == "HL" , noOfYears > 35 )
+	then
+		ValidationError error = new ValidationError();
+		error.setCause( "For HL, no of years more than 35" );
+		insert( error );
+		System.out.println("Executed Rule: " + drools.getRule().getName() );
+end

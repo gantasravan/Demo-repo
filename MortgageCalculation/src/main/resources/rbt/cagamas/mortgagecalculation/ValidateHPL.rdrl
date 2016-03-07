@@ -1,0 +1,15 @@
+package rbt.cagamas.mortgagecalculation;
+
+import java.lang.Number;
+
+rule "ValidateHPL"
+	dialect "mvel"
+	ruleflow-group "validation-rule"
+	when
+		Mortgage( productType == "HPL" , noOfYears > 9 )
+	then
+		ValidationError error = new ValidationError();
+		error.setCause( "For HPL, no of years more than 9" );
+		insert( error );
+		System.out.println("Executed Rule: " + drools.getRule().getName() );
+end

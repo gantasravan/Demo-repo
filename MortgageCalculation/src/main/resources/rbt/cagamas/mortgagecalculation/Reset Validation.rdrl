@@ -1,0 +1,13 @@
+package rbt.cagamas.mortgagecalculation;
+
+import java.lang.Number;
+
+rule "Reset Validation"
+	dialect "mvel"
+	ruleflow-group "reset-validation-rule"
+	when
+		error : ValidationError( )
+	then
+		retract( error );
+		System.out.println("Executed Rule: " + drools.getRule().getName() );
+end

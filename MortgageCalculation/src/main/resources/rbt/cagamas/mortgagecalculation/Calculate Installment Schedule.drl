@@ -1,0 +1,82 @@
+package rbt.cagamas.mortgagecalculation
+
+// list any import classes here.
+import java.math.BigDecimal;
+import rbt.cagamas.mortgagecalculation.Mortgage;
+
+
+// declare any global variables here
+dialect "java"
+rule "InstallmentScheduleRule"
+ ruleflow-group "installment"
+    no-loop true
+   
+   when
+      item :  Mortgage(verifyStatus == true)
+   
+   then
+
+	      double closingBal=0;
+	      double interestMth=(item.getInterestRate()/12)/100;
+	      double totalInterest = 0;
+	      int totalMth=item.getNoOfYears()*12;
+	      double mortgage=0,interest =0,principal=0;
+	      double mortgageQty=0,interestQty =0,principalQty=0;
+	      int month;
+		String freq=item.getProduct();
+	      double loanAmt=item.getMortgageAmount();	    
+	      mortgage=loanAmt*interestMth*Math.pow(1+interestMth,(double)totalMth)/(Math.pow(1+interestMth,(double)totalMth)-1);
+		
+		System.out.format("\n%-8s%-12s%-10s%-10s%-10s%-10s%-12s"," ","Opening","Monthly","Interest","Principle","Total", "Closing");
+       		System.out.format("\n%-8s%-12s%-10s%-10s%-10s%-10s%-12s\n\n","Month","Balance","Payment","Paid","Paid","Interest","Balance");
+
+   
+for(month=1;month<=totalMth;month++){ 
+	    	  
+	    	 if(freq.equals("Monthly")){
+	    		 interest=loanAmt*interestMth;
+	        	 totalInterest += interest;
+	        	 principal=mortgage-interest; 
+	             closingBal=loanAmt-principal;       
+	                         	  
+	   System.out.format("%-8d%-12.2f%-10.2f%-10.2f%-10.2f%-10.2f%-12.2f\n",month,loanAmt,mortgage,interest,principal,totalInterest,closingBal);
+
+	             loanAmt=closingBal;  
+	    	 }else{
+	 	    	 interest=loanAmt*interestMth;
+	 	    	 totalInterest += interest;
+	 	    	 principal=mortgage-interest; 
+	 	         closingBal=loanAmt-principal;  
+	 	         loanAmt=closingBal; 
+	 	         
+	 	         mortgageQty += mortgage;
+	 	         interestQty += interest;
+	 	         principalQty += principal; 
+	 	              
+        	     if(freq.equals("Quarterly")&&month%3==0){
+	   System.out.format("%-8d%-12.2f%-10.2f%-10.2f%-10.2f%-10.2f%-12.2f\n",month,loanAmt,mortgage,interest,principal,totalInterest,closingBal);
+
+        	         mortgageQty =0;
+        	         interestQty =0;
+        	         principalQty =0;
+    	      	 }
+    	     
+        	     if(freq.equals("Half")&&month%6==0){
+	   System.out.format("%-8d%-12.2f%-10.2f%-10.2f%-10.2f%-10.2f%-12.2f\n",month,loanAmt,mortgage,interest,principal,totalInterest,closingBal);
+
+        	         mortgageQty =0;
+        	         interestQty =0;
+        	         principalQty =0;
+    	      	  }
+    	     
+        	     if(freq.equals("Yearly")&&month%12==0){
+	   System.out.format("%-8d%-12.2f%-10.2f%-10.2f%-10.2f%-10.2f%-12.2f\n",month,loanAmt,mortgage,interest,principal,totalInterest,closingBal);
+
+        	         mortgageQty =0;
+        	         interestQty =0;
+        	         principalQty =0;
+    	      	 }
+	    	 }
+	      }
+
+end
